@@ -1,0 +1,287 @@
+<html>
+	<head>
+		<title>My first Three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+
+		<link rel="stylesheet" type="text/css" href="css/styles.css" />
+
+	</head>
+	<body>
+		
+		<script src="js/three.min.js"></script>
+		<script src="js/controls/OrbitControls.js"></script>
+		
+		<script type="text/javascript" src="js/jquery142.min.js"></script>
+
+
+
+
+
+		<script>
+			
+			var color;
+			var baseofworld = 0;
+			var wall_thickness = .1;
+
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			
+
+			
+
+			
+
+			var controls = new THREE.OrbitControls( camera, renderer.domElement );				
+			
+			camera.position.x = 5;
+			camera.position.y = 5;
+			camera.position.z = 20;
+
+			
+			// add simple ground
+			
+			var grasstexture = THREE.ImageUtils.loadTexture( "textures/grasslight-big.jpg" );
+			grasstexture.wrapS = grasstexture.wrapT = THREE.RepeatWrapping;
+			grasstexture.repeat.set(2, 2);
+
+			var fieldmaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: grasstexture } );
+
+
+			var groundGeometry = new THREE.PlaneGeometry(300, 300, 1, 1);
+
+			ground = new THREE.Mesh(groundGeometry, fieldmaterial);
+
+			ground.position.y = baseofworld;
+			ground.position.x = 0;
+			ground.rotation.x = - Math.PI / 2;
+			ground.receiveShadow = true;
+			scene.add(ground);  
+
+			
+
+
+
+
+
+
+			var changer = function() {
+			
+			
+
+
+			cube.scale.x = xdimension;
+			cube.scale.y = ydimension;
+			cube.scale.z = zdimension;
+
+			cube.material.color.setHex("0x" + prefcolor);
+
+			}
+
+
+
+			var render = function () {
+				requestAnimationFrame( render );
+
+				
+
+				renderer.render(scene, camera);
+			};
+
+			render();
+
+
+
+
+
+
+
+
+
+			var buildHouse = function () {
+
+			var househeight = prompt("How Tall Should This House Be?");
+			var housewidth = prompt("How Wide Should This House Be?");
+			var housedepth = prompt("How Deep Should This House Be?");
+			
+
+			
+
+			//wall 1
+			var wall_front = buildWall(housewidth, househeight, wall_thickness);
+			wall_front.position.z = (housedepth /2);
+
+			scene.add(wall_front);
+			
+
+			//wall 3
+			var wall_back = buildWall(housewidth, househeight , wall_thickness);
+			wall_back.position.z = ((housedepth /2) * -1);
+
+			scene.add(wall_back);
+			
+			
+
+			//wall 2
+			var wall_left = buildWall(wall_thickness, househeight, housedepth);
+			wall_left.position.x = ((housewidth /2) * -1);
+
+			scene.add(wall_left);
+			
+
+			//wall 4
+			var wall_right = buildWall(wall_thickness, househeight, housedepth);
+			wall_right.position.x = (housewidth /2);
+
+			scene.add(wall_right);
+			
+			
+
+		
+			//add roof
+			var roof = buildTop(housewidth, wall_thickness, housedepth);
+			roof.position.y = househeight;
+
+			scene.add(roof);
+
+			
+
+			var buildFloor = function () {
+
+
+			//add floor
+
+			var floortexture = THREE.ImageUtils.loadTexture( "textures/wood_floor.jpg" );
+			floortexture.wrapS = floortexture.wrapT = THREE.RepeatWrapping;
+			floortexture.repeat.set(2, 2);
+
+			var floormaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: floortexture } );
+
+
+			var floorGeometry = new THREE.PlaneGeometry(housewidth, housedepth, 1, 1);
+
+			floor = new THREE.Mesh(floorGeometry, floormaterial);
+
+			floor.position.y = baseofworld +.1;
+			floor.position.x = 0;
+			floor.rotation.x = - Math.PI / 2;
+			floor.receiveShadow = true;
+			scene.add(floor);  
+
+
+			//var floor = buildTop(housewidth, wall_thickness, housedepth);
+			//floor.position.y = baseofworld + 0;
+
+			//scene.add(floor);
+
+			}
+
+
+
+			}
+
+
+			var buildTop = function (x,y,z) {
+
+			var wall_geometry = new THREE.BoxGeometry( x, y, z );
+			var wall_material= new THREE.MeshBasicMaterial( { color: 0x9c7151 } );
+			var wall = new THREE.Mesh( wall_geometry, wall_material );
+			
+
+			return wall;
+
+
+			} 
+
+
+			var buildWall = function (x,y,z) {
+
+			var wall_geometry = new THREE.BoxGeometry( x, y, z );
+			var wall_material= new THREE.MeshBasicMaterial( { color: 0x297447 } );
+			var wall = new THREE.Mesh( wall_geometry, wall_material );
+			wall.position.y = baseofworld + (y/2);
+
+			return wall;
+
+
+			} 
+
+
+			var buildSky = function () {
+
+			var skytexture = THREE.ImageUtils.loadTexture( "textures/sky.jpg" );
+			skytexture.wrapS = skytexture.wrapT = THREE.RepeatWrapping;
+			
+
+			var skymaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: skytexture } );
+			
+			skymaterial.side = THREE.DoubleSide;
+			var skyGeometry = new THREE.SphereGeometry( 100, 8, 8 );
+			
+
+			sky = new THREE.Mesh(skyGeometry, skymaterial);
+
+
+
+			
+			
+			scene.add(sky);  
+			
+			}
+
+
+			var buildPlatform = function () {
+
+			//This builds the platform the building sits on.
+
+			var floortexture = THREE.ImageUtils.loadTexture( "textures/stone.jpg" );
+			floortexture.wrapS = floortexture.wrapT = THREE.RepeatWrapping;
+			floortexture.repeat.set(2, 2);
+
+			var floormaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: floortexture } );
+
+
+			var floorGeometry = new THREE.PlaneGeometry(housewidth*1.5, housedepth*1.25, 1, 1);
+
+			floor = new THREE.Mesh(floorGeometry, floormaterial);
+
+			floor.position.y = baseofworld +.1;
+			floor.position.x = 0;
+			floor.rotation.x = - Math.PI / 2;
+			floor.receiveShadow = true;
+			scene.add(floor);  
+			}
+
+
+      $(function() {
+        $('input#height').change(function(event) {
+          alert("Hi you changed height: " + event.target.value);
+        });
+    });
+
+
+			
+		</script>
+
+		<table>
+			<tr>
+				<td><button onClick="buildHouse()">Build House</button> </td>
+				<td><button onClick="buildSky()"> Build Sky</button></td>
+			</tr>
+    </table>
+
+    <input type='range' id='height' min='1' max='100' />
+    <input type='range' id='width'  min='1' max='100' />
+    <input type='range' id='depth'  min='1' max='100' />
+
+
+	
+
+	</body>
+</html>
