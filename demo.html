@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>My first Three.js app</title>
+		<title>Steel3D</title>
 		<style>
 			body { margin: 0; }
 			canvas { width: 100%; height: 100% }
@@ -22,12 +22,26 @@
 
 		<script>
 			
+			
+       
+
+			var front = new THREE.Mesh();
+			var left = new THREE.Mesh();
+			var right = new THREE.Mesh();
+			var back = new THREE.Mesh();
+			var roof = new THREE.Mesh();
+
 			var color;
 			var baseofworld = 0;
 			var wall_thickness = .1;
+			var width = 1;
+			var height = 1;
+			var depth = 1;
 
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+
 
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight );
@@ -35,9 +49,6 @@
 			
 
 			
-
-			
-
 			var controls = new THREE.OrbitControls( camera, renderer.domElement );				
 			
 			camera.position.x = 5;
@@ -45,8 +56,8 @@
 			camera.position.z = 20;
 
 			
-			// add simple ground
-			
+			var buildGround = function() {
+
 			var grasstexture = THREE.ImageUtils.loadTexture( "textures/grasslight-big.jpg" );
 			grasstexture.wrapS = grasstexture.wrapT = THREE.RepeatWrapping;
 			grasstexture.repeat.set(2, 2);
@@ -64,24 +75,24 @@
 			ground.receiveShadow = true;
 			scene.add(ground);  
 
+			}
+
+
+			var buildSky = function () {
+
+			var skytexture = THREE.ImageUtils.loadTexture( "textures/sky.jpg" );
+			skytexture.wrapS = skytexture.wrapT = THREE.RepeatWrapping;
 			
 
-
-
-
-
-
-			var changer = function() {
+			var skymaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: skytexture } );
 			
+			skymaterial.side = THREE.DoubleSide;
+			var skyGeometry = new THREE.SphereGeometry( 200, 100, 100 );
 			
 
-
-			cube.scale.x = xdimension;
-			cube.scale.y = ydimension;
-			cube.scale.z = zdimension;
-
-			cube.material.color.setHex("0x" + prefcolor);
-
+			sky = new THREE.Mesh(skyGeometry, skymaterial);
+			scene.add(sky);  
+			
 			}
 
 
@@ -97,94 +108,96 @@
 			render();
 
 
+/*
+			var buildPylon = function (height,width,thickness) {
+				
+				pylon = buildWall(height, width, thickness);
+				scene.add(pylon);
+				
+			}
+
+
+			var adjustPylonHeight = function (height) {
+
+				pylon.scale.y = height;
+				pylon.position.y = .1 + (height/2);
+	
+			}
+
+
+
+			var adjustPylonWidth = function (width) {
+
+				pylon.scale.x = width;
+				
+			}
+
+			var adjustPylonDepth = function (depth) {
+
+				pylon.scale.z = depth;
+				
+			}
 
 
 
 
+*/
 
 
 
 			var buildHouse = function () {
 
-			var househeight = prompt("How Tall Should This House Be?");
-			var housewidth = prompt("How Wide Should This House Be?");
-			var housedepth = prompt("How Deep Should This House Be?");
-			
-
-			
+					
 
 			//wall 1
-			var wall_front = buildWall(housewidth, househeight, wall_thickness);
-			wall_front.position.z = (housedepth /2);
+			front = buildWall(width, height, wall_thickness);
+			front.position.z = (depth /2);
 
-			scene.add(wall_front);
-			
+			scene.add(front);
+		
 
 			//wall 3
-			var wall_back = buildWall(housewidth, househeight , wall_thickness);
-			wall_back.position.z = ((housedepth /2) * -1);
+			back = buildWall(width, height , wall_thickness);
+			back.position.z = ((depth /2) * -1);
 
-			scene.add(wall_back);
+			scene.add(back);
 			
 			
 
 			//wall 2
-			var wall_left = buildWall(wall_thickness, househeight, housedepth);
-			wall_left.position.x = ((housewidth /2) * -1);
+			left = buildWall(wall_thickness, height, depth);
+			left.position.x = ((width /2) * -1);
 
-			scene.add(wall_left);
+			scene.add(left);
 			
 
 			//wall 4
-			var wall_right = buildWall(wall_thickness, househeight, housedepth);
-			wall_right.position.x = (housewidth /2);
+			right = buildWall(wall_thickness, height, depth);
+			right.position.x = (width /2);
 
-			scene.add(wall_right);
+			scene.add(right);
 			
 			
+			//ceiling
 
-		
-			//add roof
-			var roof = buildTop(housewidth, wall_thickness, housedepth);
-			roof.position.y = househeight;
 
+			roof = buildTop(width, wall_thickness, depth);
+			//top = buildTop(width, wall_thickness, depth);
+			roof.position.y = height;
 			scene.add(roof);
 
-			
-
-			var buildFloor = function () {
-
-
-			//add floor
-
-			var floortexture = THREE.ImageUtils.loadTexture( "textures/wood_floor.jpg" );
-			floortexture.wrapS = floortexture.wrapT = THREE.RepeatWrapping;
-			floortexture.repeat.set(2, 2);
-
-			var floormaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: floortexture } );
-
-
-			var floorGeometry = new THREE.PlaneGeometry(housewidth, housedepth, 1, 1);
-
-			floor = new THREE.Mesh(floorGeometry, floormaterial);
-
-			floor.position.y = baseofworld +.1;
-			floor.position.x = 0;
-			floor.rotation.x = - Math.PI / 2;
-			floor.receiveShadow = true;
-			scene.add(floor);  
-
-
-			//var floor = buildTop(housewidth, wall_thickness, housedepth);
-			//floor.position.y = baseofworld + 0;
-
-			//scene.add(floor);
+		
 
 			}
 
 
 
-			}
+
+
+
+
+
+
 
 
 			var buildTop = function (x,y,z) {
@@ -204,6 +217,7 @@
 
 			var wall_geometry = new THREE.BoxGeometry( x, y, z );
 			var wall_material= new THREE.MeshBasicMaterial( { color: 0x297447 } );
+			wall_material.side = THREE.DoubleSide;
 			var wall = new THREE.Mesh( wall_geometry, wall_material );
 			wall.position.y = baseofworld + (y/2);
 
@@ -213,30 +227,79 @@
 			} 
 
 
-			var buildSky = function () {
-
-			var skytexture = THREE.ImageUtils.loadTexture( "textures/sky.jpg" );
-			skytexture.wrapS = skytexture.wrapT = THREE.RepeatWrapping;
-			
-
-			var skymaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: skytexture } );
-			
-			skymaterial.side = THREE.DoubleSide;
-			var skyGeometry = new THREE.SphereGeometry( 100, 8, 8 );
-			
-
-			sky = new THREE.Mesh(skyGeometry, skymaterial);
+			var buildFloor = function () {
 
 
+			//add floor
 
-			
-			
-			scene.add(sky);  
+			var floortexture = THREE.ImageUtils.loadTexture( "textures/wood_floor.jpg" );
+			floortexture.wrapS = floortexture.wrapT = THREE.RepeatWrapping;
+			floortexture.repeat.set(1, 1);
+
+			var floormaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: floortexture } );
+
+
+			var floorGeometry = new THREE.PlaneGeometry(width, depth, 1, 1);
+
+			floor = new THREE.Mesh(floorGeometry, floormaterial);
+
+			floor.position.y = baseofworld +.1;
+			floor.position.x = 0;
+			floor.rotation.x = - Math.PI / 2;
+			floor.receiveShadow = true;
+			scene.add(floor);  
+
+
 			
 			}
 
 
-			var buildPlatform = function () {
+			var adjustHeight = function (height) {
+
+				left.scale.y = height;
+				left.position.y = .1 + (height/2);
+				right.scale.y = height;
+				right.position.y = .1 + (height/2);
+				front.scale.y = height;
+				front.position.y = .1 + (height/2);
+				back.scale.y = height;
+				back.position.y = .1 + (height/2);
+
+				roof.position.y = height;
+	
+			}
+
+			var adjustWidth = function (width) {
+
+				left.position.x = ((width /2) * -1);
+				right.position.x = (width /2);
+									
+				front.scale.x = width;
+				
+				back.scale.x = width;
+				roof.scale.x = width;	
+	
+			}
+
+			var adjustDepth = function (depth) {
+
+				left.scale.z = depth;
+				
+				right.scale.z = depth;
+				
+
+				front.position.z = (depth /2);
+				
+				back.position.z = ((depth /2) * -1);
+				roof.scale.z = depth;
+	
+			}
+
+
+
+
+
+		/*	var buildPlatform = function () {
 
 			//This builds the platform the building sits on.
 
@@ -256,29 +319,52 @@
 			floor.rotation.x = - Math.PI / 2;
 			floor.receiveShadow = true;
 			scene.add(floor);  
-			}
+			}*/
 
 
       $(function() {
         $('input#height').change(function(event) {
-          alert("Hi you changed height: " + event.target.value);
+        	adjustHeight(event.target.value);
+          
+
         });
+
+        $('input#width').change(function(event) {
+        	adjustWidth(event.target.value);
+          
+
+        });
+
+         $('input#depth').change(function(event) {
+        	adjustDepth(event.target.value);
+          
+
+        });
+
+
     });
 
+      buildGround();
+      buildSky();
+      buildHouse();
+      //buildPylon(1,1,1);
+      adjustHeight(20);
+      adjustWidth(10);
+      adjustDepth(50);
 
 			
 		</script>
 
 		<table>
 			<tr>
-				<td><button onClick="buildHouse()">Build House</button> </td>
-				<td><button onClick="buildSky()"> Build Sky</button></td>
+				
+				<td><button onClick="buildPylon(1,10,1)">Build test</button> </td>
 			</tr>
     </table>
 
-    <input type='range' id='height' min='1' max='100' />
-    <input type='range' id='width'  min='1' max='100' />
-    <input type='range' id='depth'  min='1' max='100' />
+    <input type='range' id='height' min='1' max='50' />
+    <input type='range' id='width'  min='1' max='50' />
+    <input type='range' id='depth'  min='1' max='50' />
 
 
 	
