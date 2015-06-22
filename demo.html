@@ -51,6 +51,8 @@
 			
 			var controls = new THREE.OrbitControls( camera, renderer.domElement );				
 			
+			controls.maxPolarAngle = (Math.PI/2) -.1; 
+
 			camera.position.x = 5;
 			camera.position.y = 5;
 			camera.position.z = 20;
@@ -64,7 +66,7 @@
 
 			var fieldmaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, map: grasstexture } );
 
-
+			fieldmaterial.side = THREE.DoubleSide;
 			var groundGeometry = new THREE.PlaneGeometry(300, 300, 1, 1);
 
 			ground = new THREE.Mesh(groundGeometry, fieldmaterial);
@@ -141,8 +143,14 @@
 
 
 
-*/
+*/			
+			var keepAboveGround = function (object,height) {
 
+						
+
+				object.position.y = .1 + (height/2);
+
+			}
 
 
 			var buildHouse = function () {
@@ -257,13 +265,16 @@
 			var adjustHeight = function (height) {
 
 				left.scale.y = height;
-				left.position.y = .1 + (height/2);
+				keepAboveGround(left, height);
+				
 				right.scale.y = height;
-				right.position.y = .1 + (height/2);
+				keepAboveGround(right, height);
+				
 				front.scale.y = height;
-				front.position.y = .1 + (height/2);
+				keepAboveGround(front, height);
+				
 				back.scale.y = height;
-				back.position.y = .1 + (height/2);
+				keepAboveGround(back, height);
 
 				roof.position.y = height;
 	
@@ -348,7 +359,7 @@
       buildSky();
       buildHouse();
       //buildPylon(1,1,1);
-      adjustHeight(20);
+      adjustHeight(25);
       adjustWidth(10);
       adjustDepth(50);
 
@@ -362,9 +373,9 @@
 			</tr>
     </table>
 
-    <input type='range' id='height' min='1' max='50' />
-    <input type='range' id='width'  min='1' max='50' />
-    <input type='range' id='depth'  min='1' max='50' />
+    <input type='range' id='height' min='1' max='100' value='25'/>
+    <input type='range' id='width'  min='1' max='100' value = '10' />
+    <input type='range' id='depth'  min='1' max='100' value = '50'/>
 
 
 	
